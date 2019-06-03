@@ -9,53 +9,93 @@ const router = vertex.router()
 
 
 // post/put/get/delete
+const profiles = {
+	sjobs: {
+		username: 'sjobs',
+		image: '/images/steve.jpg',
+		name: 'steve jobs',
+		company: 'apple',
+		languages: ['objective-c', 'swift', 'c++']
+	},
+	bgates: {
+		username: 'bgates',
+		image: '/images/bill.jpg',
+		name: 'bill gates',
+		company: 'microsoft',
+		languages: ['c', 'c#', 'java']
+	}
+}
+
+// const profiles = {
+// 	sjain : {
+// 		name : 'Shilpi',
+// 		image : '/images/steve.jpg',
+// 		company: 'Self',
+// 		languages : ['HTML','CSS','javascript']
+// 	},
+// 	sjobs : {
+// 		name : 'Steave jobs',
+// 		image : '/images/bill.jpg',
+// 		company: 'Apple',
+// 		languages : ['ojective c','swift','C++']
+// 	},
+// 	bgates : {
+// 		name : 'Bill gates',
+// 		image : '/images/bill.jpg',
+// 		company: 'Microsoft',
+// 		languages : ['c','C#','Java']
+// 	}
+// }
 
 router.get('/', (req, res) => {
 	res.render('index', {text: 'This is the dynamic data. Open index.js from the routes directory to see.'})
 })
 
-
-
-router.post('/post',(req, res) => {
-	const body  = req.body
-	res.json({
-		confirmation:'success',
-		data:body
+router.get('/profiles', (req, res) => {
+	// const body = req.body
+	// profiles[body.username] = body
+	const keys = Object.keys(profiles)
+	const list = []
+	keys.forEach(key => {
+		list.push(profiles[key])
 	})
+	
+	const timestamp = new Date();
+	const data = {
+		profiles : list,
+		timestamp : timestamp.toString()
+		// username : profiles[body.username]
+	}
+	res.render('profiles', data)
+})
+
+// router.post('/post',(req, res) => {
+// 	const body  = req.body
+// 	res.json({
+// 		confirmation:'success',
+// 		data:body
+// 	})
+// })
+
+
+router.post('/createprofile', (req, res) => {
+	const body = req.body
+	body['languages'] = req.body.languages.split(', ')
+
+	profiles[body.username] = body
+	res.json({
+		confirmation: 'success',
+		data: profiles[body.username]
+	})
+	// res.redirect('/profile/'+body.username)
 })
 
 
-//with :paramiter can get value from variable
-router.get('/:path', (req, res) => { //http://localhost:3000/xyz
-	const path = req.params.path
-
-	res.json({
-		data: path
-	})
-})
-
-const profiles = {
-	sjain : {
-		name : 'Shilpi',
-		company: 'Self',
-		languages : ['HTML','CSS','javascript']
-	},
-	sjobs : {
-		name : 'Steave jobs',
-		company: 'Apple',
-		languages : ['ojective c','swift','C++']
-	},
-	bgates : {
-		name : 'Bill gates',
-		company: 'Microsoft',
-		languages : ['c','C#','Java']
-	},
-}
 router.post('/addprofile', (req, res) =>{ //http://localhost:3000/profile/sjain
 	const body = req.body
 	body['languages'] = req.body.languages.split(', ');
 	profiles[body.username]  = body
-	res.redirect('profile/' +body.username)
+	res.redirect('profile/' + body.username)
 	// res.json({
 	// 	confirmation: 'success',
 	// 	data: body
@@ -74,6 +114,16 @@ router.get('/query',(req, res) => { //http://localhost:3000/query?name=shilpi or
 	// 	occupation:occupation
 	// })
 })
+
+//with :paramiter can get value from variable
+ router.get('/:path', (req, res) => { //http://localhost:3000/xyz
+	const path = req.params.path
+
+ 	res.json({
+ 		data: path
+ 	})
+ })
+
 router.get('/:profile/:username', (req, res) => { //http://localhost:3000/123/shilpi
 	const profile = req.params.profile
 	const username = req.params.username
